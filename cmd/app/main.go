@@ -3,7 +3,7 @@ package main
 import (
 	"go-backed/app/configuration"
 	"go-backed/app/db"
-	"go-backed/app/routers"
+	"go-backed/app/route"
 	"log"
 	"net/http"
 	"os"
@@ -17,8 +17,8 @@ type app struct {
 
 func main () {
 	app := &app{}
-	router := http.NewServeMux()
-	routers.InitRouters(router)
+	router := route.NewRouter()
+	router.LoadHTMLGlob("app/views/*")
 
 	listenAddr := os.Getenv("HTTP_LISTEN_ADDR")
 

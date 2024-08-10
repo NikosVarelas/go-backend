@@ -1,5 +1,9 @@
 package models
 
+type UserRepository interface {
+	GetUserByID(id int) (User, error)
+}
+
 type User struct {
 	ID        int
 	FirstName string
