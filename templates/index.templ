@@ -1,0 +1,87 @@
+package templates
+
+templ Index() {
+    <head>
+        <meta charset="UTF-8">
+        <script src="https://unpkg.com/htmx.org@2.0.2" integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ" crossorigin="anonymous"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login Page</title>
+        <style>
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+            }
+            .header {
+                width: 100%;
+                background-color: #333;
+                color: white;
+                padding: 10px 20px;
+                text-align: center;
+            }
+            .content {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: calc(100vh - 60px); /* Adjust height to account for footer/header */
+            }
+            .login-container {
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+                width: 300px;
+                text-align: center;
+            }
+            .login-container h2 {
+                margin-bottom: 20px;
+                font-size: 24px;
+                color: #333;
+            }
+            .login-container input[type="email"],
+            .login-container input[type="password"] {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+            .login-container input[type="submit"] {
+                width: 100%;
+                padding: 10px;
+                background-color: #175019;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            .login-container input[type="submit"]:hover {
+                background-color: #45a049;
+            }
+            .sign-up-btn button {
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            @Footer()
+        </div>
+        <div class="content">
+            <div id="login" class="login-container">
+                <h2>Login</h2>
+                <form action="/auth/login" method="POST">
+                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <input type="submit" value="Login">
+                </form>
+                <div class="sign-in-btn">
+                    <button hx-get="/auth/sign-up"
+                        hx-target="#login"
+                        hx-swap="innerHTML"
+                        >Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </body>
+}

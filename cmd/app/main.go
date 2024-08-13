@@ -2,8 +2,8 @@ package main
 
 import (
 	"go-backed/app/configuration"
-	"go-backed/app/db"
 	"go-backed/app/route"
+	"go-backed/app/store"
 	"log"
 	"net/http"
 	"os"
@@ -16,9 +16,18 @@ type app struct {
 }
 
 func main () {
-	app := &app{}
-	router := route.NewRouter()
-	router.LoadHTMLGlob("app/views/*")
+	dbConfig := &store.PGConfig{
+		Host:     os.Getenv("POSTGRES_HOST"),
+		User: os.Getenv("POSTGRES_USER"),
+		Password: os.Getenv("POSTGRES_PASSWORD"),
+		DBName:   os.Getenv("POSTGRES_DB_NAME"),
+	}
+	db, err:= store.NewPGStore(dbConfig)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	router := route.NewRouter(db)
 
 	listenAddr := os.Getenv("HTTP_LISTEN_ADDR")
 
@@ -28,13 +37,12 @@ func main () {
 		Addr:    listenAddr,
 		Handler: router,
 	}
-	db, err:= db.InitPostgres()
 
-	if err != nil {
-		log.Fatal(err)
-	}
+	userStore := store.NewUserStore(db)
+	user, _ := userStore.GetUserByID(1)
 
-	app.Application = configuration.New(db)
+	log.Println("getting user by id")
+	log.Println(user.Email)
 
 	server.ListenAndServe()
 }

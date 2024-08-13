@@ -11,5 +11,5 @@ import (
 func NewAuthRouter(timeout time.Duration, db *models.Database, gin *gin.Engine) {
 	AuthRouter := gin.Group("/auth")
 	// All Public APIs
-	AuthRouter.POST("/", controllers.HandleHome())
+	AuthRouter.POST("/", controllers.LoginIndex())
 }

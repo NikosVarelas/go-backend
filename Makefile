@@ -6,3 +6,7 @@ db:
 
 db-down:
 	@docker-compose down
+
+templ:
+	@templ generate -watch -proxy=http://localhost:3000
+
