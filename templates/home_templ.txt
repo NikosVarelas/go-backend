@@ -1,1 +1,1 @@
-<h1>Home</h1>
+<script src=\"https://unpkg.com/htmx.org@2.0.2\" integrity=\"sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ\" crossorigin=\"anonymous\"></script><style>\n    .btn {\n    display: inline-block;\n    padding: 10px 20px;\n    background-color: #007bff;\n    color: white;\n    text-decoration: none;\n    border-radius: 5px;\n    text-align: center;\n}\n\n.btn:hover {\n    background-color: #0056b3;\n}\n\n    </style><h1>Home</h1><a href=\"/auth/logout\" class=\"btn\">Logout</a>

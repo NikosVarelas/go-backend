@@ -3,32 +3,62 @@ package controllers
 import (
 	"context"
 	"go-backed/app/store"
+	"go-backed/app/token"
 	"go-backed/templates"
-	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Login(repo store.Store) gin.HandlerFunc {
+func LoginUser(repo store.Store, tokenMaker *token.JWTMaker) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		email := c.Request.FormValue("email")
-		password := c.Request.FormValue("password")
+		var u LoginUserReq
+		if err := c.ShouldBind(&u); err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+			return
+		}
+		email := u.Email
+		password := u.Password
 
 		user, err := repo.GetUserByEmail(email)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "Failed to get user")
 			return
 		}
-		log.Println(password)
-		log.Println(user)
+
 		pwdMatch := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 		if pwdMatch != nil {
 			c.String(http.StatusUnauthorized, "Invalid credentials")
 			return
 		}
+
+		accessToken, _, err := tokenMaker.CreateToken(user.ID, user.Email, user.IsAdmin, time.Second * 15)
+		if err != nil {
+			c.String(http.StatusInternalServerError, "Failed to create access token")
+			return
+		}
+		cookie := http.Cookie{
+			Name: "access_token",
+			Value: accessToken,
+			Expires: time.Now().Add(time.Second * 15),
+			HttpOnly: true,
+			SameSite: http.SameSiteStrictMode,
+			Secure: true,
+			Path: "/",
+		}
+		http.SetCookie(c.Writer, &cookie)
+
 		c.Redirect(http.StatusFound, "/")
+	}
+}
+
+func LogoutUser() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.SetCookie("access_token", "", -1, "/", "localhost:3000", false, true)
+		c.SetCookie("refresh_token", "", -1, "/", "localhost:3000", false, true)
+		c.Redirect(http.StatusFound, "/auth/login")
 	}
 }
 

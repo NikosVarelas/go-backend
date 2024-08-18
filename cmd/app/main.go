@@ -1,19 +1,15 @@
 package main
 
 import (
-	"go-backed/app/configuration"
 	"go-backed/app/route"
 	"go-backed/app/store"
+	"go-backed/app/token"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
 )
-
-type app struct {
-	Application *configuration.Application
-}
 
 func main () {
 	dbConfig := &store.PGConfig{
@@ -27,7 +23,8 @@ func main () {
 	if err != nil {
 		log.Fatal(err)
 	}
-	router := route.NewRouter(db)
+	tokenMaker := token.NewJWTMaker(os.Getenv("JWT_SECRET_KEY"))
+	router := route.NewRouter(db, tokenMaker)
 
 	listenAddr := os.Getenv("HTTP_LISTEN_ADDR")
 
