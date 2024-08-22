@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter (repo store.Store, tokenMaker *token.JWTMaker) * gin.Engine{
+func NewRouter(repo store.Store, tokenMaker *token.JWTMaker) *gin.Engine {
 	router := gin.Default()
 	NewHomeRouter(router, repo, tokenMaker)
 	return router

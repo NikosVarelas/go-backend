@@ -3,33 +3,33 @@ package store
 import "time"
 
 type User struct {
-	ID       int
-	Email    string
-	Password string
-	IsAdmin  bool
+	ID        int
+	Email     string
+	Password  string
+	IsAdmin   bool
 	CreatedAt time.Time
-	UpdateAt time.Time
+	UpdateAt  time.Time
 }
 
-func NewUser (id int, email, password string) *User {
+func NewUser(id int, email, password string) *User {
 	return &User{
-		ID: id,
-		Email: email,
-		Password: password,
-		IsAdmin: false,
+		ID:        id,
+		Email:     email,
+		Password:  password,
+		IsAdmin:   false,
 		CreatedAt: time.Now(),
-		UpdateAt: time.Now(),
+		UpdateAt:  time.Now(),
 	}
 }
 
 func NewAdminUser(id int, email string, password string) *User {
 	return &User{
-		ID: id,
-		Email: email,
-		Password: password,
-		IsAdmin: true,
+		ID:        id,
+		Email:     email,
+		Password:  password,
+		IsAdmin:   true,
 		CreatedAt: time.Now(),
-		UpdateAt: time.Now(),
+		UpdateAt:  time.Now(),
 	}
 }
 
@@ -44,9 +44,9 @@ type userStore struct {
 func NewUserStore(store Store) UserStore {
 	return &userStore{
 		store: store,
-
 	}
 }
 
 func (us *userStore) GetUserByID(id int) (User, error) {
-	return us.store.GetUserByID(id)}
+	return us.store.GetUserByID(id)
+}

@@ -33,19 +33,19 @@ func LoginUser(repo store.Store, tokenMaker *token.JWTMaker) gin.HandlerFunc {
 			return
 		}
 
-		accessToken, _, err := tokenMaker.CreateToken(user.ID, user.Email, user.IsAdmin, time.Second * 15)
+		accessToken, _, err := tokenMaker.CreateToken(user.ID, user.Email, user.IsAdmin, time.Second*15)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "Failed to create access token")
 			return
 		}
 		cookie := http.Cookie{
-			Name: "access_token",
-			Value: accessToken,
-			Expires: time.Now().Add(time.Second * 15),
+			Name:     "access_token",
+			Value:    accessToken,
+			Expires:  time.Now().Add(time.Second * 15),
 			HttpOnly: true,
 			SameSite: http.SameSiteStrictMode,
-			Secure: true,
-			Path: "/",
+			Secure:   true,
+			Path:     "/",
 		}
 		http.SetCookie(c.Writer, &cookie)
 
@@ -68,7 +68,7 @@ func LoginIndex() gin.HandlerFunc {
 		c.Writer.Header().Set("Content-Type", "text/html")
 		// Render the templ component and write it to the response
 		t := templates.Index()
-		err := templates.Layout(t ,"login").Render(c.Request.Context(), c.Writer)
+		err := templates.Layout(t, "login").Render(c.Request.Context(), c.Writer)
 		if err != nil {
 			// Handle the error
 			c.String(http.StatusInternalServerError, err.Error())
@@ -77,12 +77,11 @@ func LoginIndex() gin.HandlerFunc {
 	}
 }
 
-func SignUpSubmit (repo store.Store) gin.HandlerFunc {
+func SignUpSubmit(repo store.Store) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		email := c.Request.FormValue("email")
 		password := c.Request.FormValue("password")
 		confirmPassowrd := c.Request.FormValue("confirm-password")
-
 
 		if email == "" || password == "" || confirmPassowrd == "" {
 			c.String(http.StatusBadRequest, "email, password and confirm password are required")
@@ -100,7 +99,7 @@ func SignUpSubmit (repo store.Store) gin.HandlerFunc {
 		}
 		c.Writer.WriteHeader(http.StatusOK)
 		c.Writer.Header().Set("Content-Type", "text/html")
-		
+
 		c.Redirect(http.StatusFound, "/protected/home")
 	}
 }

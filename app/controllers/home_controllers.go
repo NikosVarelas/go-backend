@@ -8,9 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
-
-func SignUp () gin.HandlerFunc {
+func SignUp() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusOK)
 		c.Writer.Header().Set("Content-Type", "text/html")

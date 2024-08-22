@@ -12,7 +12,7 @@ type authKey struct{}
 
 func AuthMiddleware(jwtKey string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		claims, err:= verifyClaimsFromCookie(c, token.NewJWTMaker(jwtKey))
+		claims, err := verifyClaimsFromCookie(c, token.NewJWTMaker(jwtKey))
 		if err != nil {
 			c.Redirect(302, "/auth/login")
 		}

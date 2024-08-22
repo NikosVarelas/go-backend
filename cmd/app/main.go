@@ -11,18 +11,18 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func main () {
+func main() {
 	dbConfig := &store.PGConfig{
 		Host:     os.Getenv("POSTGRES_HOST"),
-		User: os.Getenv("POSTGRES_USER"),
+		User:     os.Getenv("POSTGRES_USER"),
 		Password: os.Getenv("POSTGRES_PASSWORD"),
 		DBName:   os.Getenv("POSTGRES_DB_NAME"),
-		Port: os.Getenv("POSTGRES_PORT"),
+		Port:     os.Getenv("POSTGRES_PORT"),
 	}
-	db, err:= store.NewPGStore(dbConfig)
+	db, err := store.NewPGStore(dbConfig)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	tokenMaker := token.NewJWTMaker(os.Getenv("JWT_SECRET_KEY"))
 	router := route.NewRouter(db, tokenMaker)

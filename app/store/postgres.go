@@ -18,7 +18,7 @@ const (
 
 type PGStore struct {
 	config *PGConfig
-	DB *sql.DB
+	DB     *sql.DB
 }
 
 type PGConfig struct {
@@ -26,11 +26,11 @@ type PGConfig struct {
 	User     string
 	Password string
 	DBName   string
-	Port string
+	Port     string
 }
 
 func NewPGStore(config *PGConfig) (*PGStore, error) {
-	dsn:= fmt.Sprintf("postgres://%s:%s@%s%s/%s?sslmode=disable", config.User, config.Password, config.Host, config.Port,config.DBName)
+	dsn := fmt.Sprintf("postgres://%s:%s@%s%s/%s?sslmode=disable", config.User, config.Password, config.Host, config.Port, config.DBName)
 	db, err := sql.Open("postgres", dsn)
 	log.Println(dsn)
 	if err != nil {
@@ -46,7 +46,7 @@ func NewPGStore(config *PGConfig) (*PGStore, error) {
 
 	return &PGStore{
 		config: config,
-		DB: db,
+		DB:     db,
 	}, nil
 }
 
