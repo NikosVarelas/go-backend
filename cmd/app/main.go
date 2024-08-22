@@ -17,6 +17,7 @@ func main () {
 		User: os.Getenv("POSTGRES_USER"),
 		Password: os.Getenv("POSTGRES_PASSWORD"),
 		DBName:   os.Getenv("POSTGRES_DB_NAME"),
+		Port: os.Getenv("POSTGRES_PORT"),
 	}
 	db, err:= store.NewPGStore(dbConfig)
 
@@ -25,6 +26,7 @@ func main () {
 	}
 	tokenMaker := token.NewJWTMaker(os.Getenv("JWT_SECRET_KEY"))
 	router := route.NewRouter(db, tokenMaker)
+	router.Static("/static/", "./static")
 
 	listenAddr := os.Getenv("HTTP_LISTEN_ADDR")
 
@@ -45,6 +47,11 @@ func main () {
 }
 
 func init() {
+	log.Println(os.Getenv("IS_DOCKER"))
+	log.Println(os.Getenv("POSTGRES_HOST"))
+	if os.Getenv("IS_DOCKER") == "true" {
+		return
+	}
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}

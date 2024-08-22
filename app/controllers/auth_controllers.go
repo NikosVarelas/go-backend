@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"context"
 	"go-backed/app/store"
 	"go-backed/app/token"
 	"go-backed/templates"
@@ -67,12 +66,12 @@ func LoginIndex() gin.HandlerFunc {
 		// Set the status and content type
 		c.Writer.WriteHeader(http.StatusOK)
 		c.Writer.Header().Set("Content-Type", "text/html")
-
 		// Render the templ component and write it to the response
-		err := templates.Index().Render(context.Background(),c.Writer)
+		t := templates.Index()
+		err := templates.Layout(t ,"login").Render(c.Request.Context(), c.Writer)
 		if err != nil {
 			// Handle the error
-			c.String(http.StatusInternalServerError, "Failed to render template")
+			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
 	}

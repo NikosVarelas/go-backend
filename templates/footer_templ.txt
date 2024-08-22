@@ -1,1 +1,0 @@
-<style>\n    .footer-container {\n        display: flex;\n        justify-content: space-around;\n    }\n    </style><footer><div class=\"footer-container\"><div class=\"footer-section\"><h3>About Us</h3></div><div class=\"footer-section\"><h3>Contact Us</h3></div><div class=\"footer-section\"><h3>Send Us a Message</h3></div></div></footer>

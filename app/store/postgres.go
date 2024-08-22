@@ -26,11 +26,13 @@ type PGConfig struct {
 	User     string
 	Password string
 	DBName   string
+	Port string
 }
 
 func NewPGStore(config *PGConfig) (*PGStore, error) {
-	dsn:= fmt.Sprintf("postgres://%s:%s@localhost/%s?sslmode=disable", config.User, config.Password, config.DBName)
+	dsn:= fmt.Sprintf("postgres://%s:%s@%s%s/%s?sslmode=disable", config.User, config.Password, config.Host, config.Port,config.DBName)
 	db, err := sql.Open("postgres", dsn)
+	log.Println(dsn)
 	if err != nil {
 		return nil, err
 	}

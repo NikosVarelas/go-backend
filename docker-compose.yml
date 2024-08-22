@@ -14,5 +14,22 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  app:
+    image: go:latest  # Path to your Dockerfile
+    container_name: go_app
+    restart: always
+    environment:
+      POSTGRES_HOST: db              # Use the service name for the host
+      POSTGRES_PORT: 5432
+      POSTGRES_DB_NAME: backend
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      IS_DOCKER: "true"
+      HTTP_LISTEN_ADDR: "0.0.0.0:3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db                             # Ensure the db service starts before app
+
 volumes:
   postgres_data:
