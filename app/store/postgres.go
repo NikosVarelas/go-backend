@@ -3,6 +3,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
+	"go-backed/app/configuration"
 	"log"
 	"time"
 
@@ -17,19 +18,11 @@ const (
 )
 
 type PGStore struct {
-	config *PGConfig
+	config *configuration.PGConfig
 	DB     *sql.DB
 }
 
-type PGConfig struct {
-	Host     string
-	User     string
-	Password string
-	DBName   string
-	Port     string
-}
-
-func NewPGStore(config *PGConfig) (*PGStore, error) {
+func NewPGStore(config *configuration.PGConfig) (*PGStore, error) {
 	dsn := fmt.Sprintf("postgres://%s:%s@%s%s/%s?sslmode=disable", config.User, config.Password, config.Host, config.Port, config.DBName)
 	db, err := sql.Open("postgres", dsn)
 	log.Println(dsn)

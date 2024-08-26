@@ -4,6 +4,9 @@ FROM golang:1.22-alpine as builder
 # Set the working directory inside the container
 WORKDIR /app
 
+ARG IS_DOCKER=true
+ENV IS_DOCKER=${IS_DOCKER}
+
 # Copy go.mod and go.sum files first, for dependency caching
 COPY go.mod go.sum ./
 
@@ -13,8 +16,8 @@ RUN go mod download
 # Copy the rest of the application source code into the container
 COPY . .
 
-# Build the Gin application
-RUN go build -o /app/main ./cmd/app
+# Cross-compile the Go application for Linux x86_64
+RUN GOARCH=amd64 GOOS=linux go build -o /app/main ./cmd/app
 
 # Stage 2: Build Tailwind CSS
 FROM node:20-alpine as tailwind-builder
@@ -42,7 +45,6 @@ WORKDIR /app
 
 # Install any necessary dependencies
 RUN apk --no-cache add ca-certificates
-
 
 # Copy the Go binary from the builder stage
 COPY --from=builder /app/main .

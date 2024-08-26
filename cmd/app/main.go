@@ -1,6 +1,8 @@
 package main
 
 import (
+	"go-backed/app/cache"
+	"go-backed/app/configuration"
 	"go-backed/app/route"
 	"go-backed/app/store"
 	"go-backed/app/token"
@@ -12,20 +14,23 @@ import (
 )
 
 func main() {
-	dbConfig := &store.PGConfig{
-		Host:     os.Getenv("POSTGRES_HOST"),
-		User:     os.Getenv("POSTGRES_USER"),
-		Password: os.Getenv("POSTGRES_PASSWORD"),
-		DBName:   os.Getenv("POSTGRES_DB_NAME"),
-		Port:     os.Getenv("POSTGRES_PORT"),
+	config := configuration.NewConfig()
+	db, err := store.NewPGStore(config.Database)
+	if err != nil {
+		log.Fatal(err)
 	}
-	db, err := store.NewPGStore(dbConfig)
+
+	redis := cache.NewRedisCache()
+
+	ping, err := redis.Ping()
+
+	log.Println("Conneting to redis", ping)
 
 	if err != nil {
 		log.Println(err)
 	}
 	tokenMaker := token.NewJWTMaker(os.Getenv("JWT_SECRET_KEY"))
-	router := route.NewRouter(db, tokenMaker)
+	router := route.NewRouter(db, tokenMaker, redis, config)
 	router.Static("/static/", "./static")
 
 	listenAddr := os.Getenv("HTTP_LISTEN_ADDR")
@@ -36,12 +41,6 @@ func main() {
 		Addr:    listenAddr,
 		Handler: router,
 	}
-
-	userStore := store.NewUserStore(db)
-	user, _ := userStore.GetUserByID(1)
-
-	log.Println("getting user by id")
-	log.Println(user.Email)
 
 	server.ListenAndServe()
 }

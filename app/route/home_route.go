@@ -1,6 +1,8 @@
 package route
 
 import (
+	"go-backed/app/cache"
+	"go-backed/app/configuration"
 	"go-backed/app/controllers"
 	"go-backed/app/middleware"
 	"go-backed/app/store"
@@ -10,8 +12,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewHomeRouter(r *gin.Engine, repo store.Store, tokenMaker *token.JWTMaker) {
+func NewHomeRouter(r *gin.Engine, repo store.Store, tokenMaker *token.JWTMaker, cache cache.Cache, config *configuration.Config) {
 	// Public routes
+	r.Use(middleware.RateLimitMiddleware(cache, config.RateLimit.MaxRequests, config.RateLimit.Period))
 	authRoutes := r.Group("/auth")
 	authRoutes.GET("/login", controllers.LoginIndex())
 	authRoutes.GET("/sign-up", controllers.SignUp())

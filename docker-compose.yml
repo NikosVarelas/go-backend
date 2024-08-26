@@ -14,8 +14,16 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  cache:
+    image: redis:latest
+    container_name: cache
+    restart: always
+    command: ["redis-server", "--requirepass", "admin"]
+    ports:
+      - "6379:6379"
+
   app:
-    image: go:latest  # Path to your Dockerfile
+    image: go:latest
     container_name: go_app
     restart: always
     environment:
@@ -26,10 +34,13 @@ services:
       POSTGRES_PASSWORD: admin
       IS_DOCKER: "true"
       HTTP_LISTEN_ADDR: "0.0.0.0:3000"
+      REDIS_HOST: cache              # Redis connection details
+      REDIS_PORT: 6379
     ports:
       - "3000:3000"
     depends_on:
-      - db                             # Ensure the db service starts before app
+      - db
+      - cache
 
 volumes:
   postgres_data:
