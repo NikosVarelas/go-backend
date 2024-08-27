@@ -13,7 +13,7 @@ type RedisCache struct {
 func NewRedisCache() *RedisCache {
 	return &RedisCache{
 		client: redis.NewClient(&redis.Options{
-			Addr: "localhost:6379",
+			Addr:     "localhost:6379",
 			Password: "admin",
 		}),
 	}
@@ -24,7 +24,6 @@ func (c *RedisCache) Get(key string) (string, error) {
 	val, err := c.client.Get(key).Result()
 	return val, err
 }
-
 
 func (c *RedisCache) Set(key string, value interface{}) error {
 	return c.client.Set(key, value, 0).Err()

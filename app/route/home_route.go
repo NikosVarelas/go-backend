@@ -7,14 +7,14 @@ import (
 	"go-backed/app/middleware"
 	"go-backed/app/store"
 	"go-backed/app/token"
-	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func NewHomeRouter(r *gin.Engine, repo store.Store, tokenMaker *token.JWTMaker, cache cache.Cache, config *configuration.Config) {
 	// Public routes
-	r.Use(middleware.RateLimitMiddleware(cache, config.RateLimit.MaxRequests, config.RateLimit.Period))
+	r.Use(middleware.RateLimitMiddleware(cache, config.RateLimit.MaxRequests, time.Duration(config.RateLimit.TimeInterval)*time.Minute))
 	authRoutes := r.Group("/auth")
 	authRoutes.GET("/login", controllers.LoginIndex())
 	authRoutes.GET("/sign-up", controllers.SignUp())
@@ -24,7 +24,7 @@ func NewHomeRouter(r *gin.Engine, repo store.Store, tokenMaker *token.JWTMaker, 
 
 	// Protected routes
 	protectedRoutes := r.Group("/")
-	protectedRoutes.Use(middleware.AuthMiddleware(os.Getenv("JWT_SECRET_KEY")))
+	protectedRoutes.Use(middleware.AuthMiddleware(config))
 
 	protectedRoutes.GET("/", controllers.Home())
 }

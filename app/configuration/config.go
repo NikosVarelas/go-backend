@@ -1,70 +1,51 @@
 package configuration
 
 import (
+	"errors"
 	"os"
-	"time"
+
+	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
-	Database       *PGConfig
-	Cache          *RedisConfig
-	JWTSecretKey   string
-	HTTPListenAddr string
-	IsDocker       string
-	RateLimit      *RateLimitConfig
-}
+func LoadConfig() (*Config, error) {
+	var config Config
+	var yamlFile []byte
+	var err error
 
-type RateLimitConfig struct {
-	MaxRequests int
-	Period      time.Duration
-}
-
-func NewRateLimitConfig() *RateLimitConfig {
-	return &RateLimitConfig{
-		MaxRequests: 100,
-		Period:      1 * time.Minute,
+	isProd := os.Getenv("GO_ENV") == "production"
+	if isProd {
+		yamlFile, err = os.ReadFile("./config/prod.yaml")
+	} else {
+		yamlFile, err = os.ReadFile("./config/dev.yaml")
 	}
-}
 
-type PGConfig struct {
-	Host     string
-	User     string
-	Password string
-	DBName   string
-	Port     string
-}
-
-func NewPGConfig() *PGConfig {
-	return &PGConfig{
-		Host:     os.Getenv("POSTGRES_HOST"),
-		User:     os.Getenv("POSTGRES_USER"),
-		Password: os.Getenv("POSTGRES_PASSWORD"),
-		DBName:   os.Getenv("POSTGRES_DB_NAME"),
-		Port:     os.Getenv("POSTGRES_PORT"),
+	if err != nil {
+		return nil, err
 	}
-}
 
-type RedisConfig struct {
-	Host     string
-	Password string
-	Port     string
-}
-
-func NewRedisConfig() *RedisConfig {
-	return &RedisConfig{
-		Host:     os.Getenv("REDIS_HOST"),
-		Password: os.Getenv("REDIS_PASSWORD"),
-		Port:     os.Getenv("REDIS_PORT"),
+	err = yaml.Unmarshal(yamlFile, &config) // Pass the pointer to the config struct
+	if err != nil {
+		return nil, err
 	}
-}
 
-func NewConfig() *Config {
-	return &Config{
-		Database:       NewPGConfig(),
-		Cache:          NewRedisConfig(),
-		JWTSecretKey:   os.Getenv("JWT_SECRET"),
-		HTTPListenAddr: os.Getenv("HTTP_LISTEN_ADDR"),
-		IsDocker:       os.Getenv("IS_DOCKER"),
-		RateLimit:      NewRateLimitConfig(),
+	// Check and set required environment variables
+	postgresPassword := os.Getenv("POSTGRES_PASSWORD")
+	if postgresPassword == "" {
+		return nil, errors.New("POSTGRES_PASSWORD environment variable is required")
 	}
+	config.Database.PostgresPassword = postgresPassword
+
+	redisPassword := os.Getenv("REDIS_PASSWORD")
+	if redisPassword == "" {
+		return nil, errors.New("REDIS_PASSWORD environment variable is required")
+	}
+	config.Cache.RedisPassword = redisPassword
+
+	jwtSecretKey := os.Getenv("JWT_SECRET_KEY")
+	if jwtSecretKey == "" {
+		return nil, errors.New("JWT_SECRET_KEY environment variable is required")
+	}
+	config.JwtToken.SecretKey = jwtSecretKey
+
+	return &config, nil
 }

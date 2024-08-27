@@ -2,6 +2,7 @@ package token
 
 import (
 	"fmt"
+	"go-backed/app/configuration"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -9,14 +10,18 @@ import (
 
 type JWTMaker struct {
 	secretKey string
+	period    int
 }
 
-func NewJWTMaker(secretKey string) *JWTMaker {
-	return &JWTMaker{secretKey}
+func NewJWTMaker(config *configuration.Config) *JWTMaker {
+	return &JWTMaker{
+		secretKey: config.JwtToken.SecretKey,
+		period:    config.JwtToken.Period,
+	}
 }
 
-func (maker *JWTMaker) CreateToken(id int, email string, isAdmin bool, duration time.Duration) (string, *UserClaims, error) {
-	claims, err := NewUserClaims(id, email, isAdmin, duration)
+func (maker *JWTMaker) CreateToken(id int, email string, isAdmin bool) (string, *UserClaims, error) {
+	claims, err := NewUserClaims(id, email, isAdmin, time.Duration(maker.period)*time.Hour*24)
 	if err != nil {
 		return "", nil, err
 	}
@@ -50,4 +55,8 @@ func (maker *JWTMaker) VerifyToken(tokenStr string) (*UserClaims, error) {
 	}
 
 	return claims, nil
+}
+
+func (maker *JWTMaker) GetExpiration() time.Duration {
+	return time.Duration(maker.period) * time.Hour * 24
 }

@@ -1,11 +1,8 @@
 package main
 
 import (
-	"go-backed/app/cache"
 	"go-backed/app/configuration"
 	"go-backed/app/route"
-	"go-backed/app/store"
-	"go-backed/app/token"
 	"log"
 	"net/http"
 	"os"
@@ -14,31 +11,17 @@ import (
 )
 
 func main() {
-	config := configuration.NewConfig()
-	db, err := store.NewPGStore(config.Database)
+	config, err := configuration.NewConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	redis := cache.NewRedisCache()
-
-	ping, err := redis.Ping()
-
-	log.Println("Conneting to redis", ping)
-
-	if err != nil {
-		log.Println(err)
-	}
-	tokenMaker := token.NewJWTMaker(os.Getenv("JWT_SECRET_KEY"))
-	router := route.NewRouter(db, tokenMaker, redis, config)
+	router := route.NewRouter(config)
 	router.Static("/static/", "./static")
 
-	listenAddr := os.Getenv("HTTP_LISTEN_ADDR")
-
-	log.Println("Server started on", listenAddr)
+	log.Println("Server started on", config.Server.HTTPListenAddr)
 
 	server := &http.Server{
-		Addr:    listenAddr,
+		Addr:    config.Server.HTTPListenAddr,
 		Handler: router,
 	}
 

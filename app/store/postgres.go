@@ -18,12 +18,12 @@ const (
 )
 
 type PGStore struct {
-	config *configuration.PGConfig
-	DB     *sql.DB
+	DB *sql.DB
 }
 
-func NewPGStore(config *configuration.PGConfig) (*PGStore, error) {
-	dsn := fmt.Sprintf("postgres://%s:%s@%s%s/%s?sslmode=disable", config.User, config.Password, config.Host, config.Port, config.DBName)
+func NewPGStore(config *configuration.Config) (*PGStore, error) {
+	dbConfig := config.Database
+	dsn := fmt.Sprintf("postgres://%s:%s@%s%s/%s?sslmode=disable", dbConfig.PostgresUser, dbConfig.PostgresPassword, dbConfig.PostgresHost, dbConfig.PostgresPort, dbConfig.PostgresName)
 	db, err := sql.Open("postgres", dsn)
 	log.Println(dsn)
 	if err != nil {
@@ -38,8 +38,7 @@ func NewPGStore(config *configuration.PGConfig) (*PGStore, error) {
 	fmt.Println("Connected to postgres db")
 
 	return &PGStore{
-		config: config,
-		DB:     db,
+		DB: db,
 	}, nil
 }
 

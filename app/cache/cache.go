@@ -9,4 +9,3 @@ type Cache interface {
 	SetWithExpiration(key string, value interface{}, expiration time.Duration) error
 	DecrBy(key string, decrement int64) (int64, error)
 }
-

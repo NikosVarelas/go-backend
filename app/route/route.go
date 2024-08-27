@@ -5,12 +5,30 @@ import (
 	"go-backed/app/configuration"
 	"go-backed/app/store"
 	"go-backed/app/token"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(repo store.Store, tokenMaker *token.JWTMaker, cache cache.Cache, config *configuration.Config) *gin.Engine {
+func NewRouter(config *configuration.Config) *gin.Engine {
+	db, err := store.NewPGStore(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	redis := cache.NewRedisCache()
+
+	ping, err := redis.Ping()
+
+	log.Println("Conneting to redis", ping)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	tokenMaker := token.NewJWTMaker(config)
+
 	router := gin.Default()
-	NewHomeRouter(router, repo, tokenMaker, cache, config)
+	NewHomeRouter(router, db, tokenMaker, redis, config)
 	return router
 }

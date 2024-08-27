@@ -1,0 +1,16 @@
+Server:
+  HTTP_LISTEN_ADDR: localhost:3000
+Database:
+  POSTGRES_HOST: localhost
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: admin
+  POSTGRES_DB: backend
+Cache:
+  REDIS_HOST: cache
+  REDIS_PORT: 6379
+  REDIS_PASSWORD: admin
+Rate_Limit:
+  MAX_REQUESTS: 100
+  TIME_INTERVAL: 1 # minute
+JWT_TOKEN:
+  PERIOD: 365 # days

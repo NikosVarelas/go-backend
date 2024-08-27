@@ -33,7 +33,7 @@ func LoginUser(repo store.Store, tokenMaker *token.JWTMaker) gin.HandlerFunc {
 			return
 		}
 
-		accessToken, _, err := tokenMaker.CreateToken(user.ID, user.Email, user.IsAdmin, time.Second*15)
+		accessToken, _, err := tokenMaker.CreateToken(user.ID, user.Email, user.IsAdmin)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "Failed to create access token")
 			return
@@ -41,7 +41,7 @@ func LoginUser(repo store.Store, tokenMaker *token.JWTMaker) gin.HandlerFunc {
 		cookie := http.Cookie{
 			Name:     "access_token",
 			Value:    accessToken,
-			Expires:  time.Now().Add(time.Second * 15),
+			Expires:  time.Now().Add(tokenMaker.GetExpiration()),
 			HttpOnly: true,
 			SameSite: http.SameSiteStrictMode,
 			Secure:   true,

@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"fmt"
+	"go-backed/app/configuration"
 	"go-backed/app/token"
 
 	"github.com/gin-gonic/gin"
@@ -10,9 +11,11 @@ import (
 
 type authKey struct{}
 
-func AuthMiddleware(jwtKey string) gin.HandlerFunc {
+func AuthMiddleware(config *configuration.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		claims, err := verifyClaimsFromCookie(c, token.NewJWTMaker(jwtKey))
+		claims, err := verifyClaimsFromCookie(c, token.NewJWTMaker(
+			config,
+		))
 		if err != nil {
 			c.Redirect(302, "/auth/login")
 		}
