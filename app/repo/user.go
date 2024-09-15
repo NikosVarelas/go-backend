@@ -41,10 +41,10 @@ type UserStore interface {
 }
 
 type userStore struct {
-	store Store
+	store Repository
 }
 
-func NewUserStore(store Store) UserStore {
+func NewUserStore(store Repository) UserStore {
 	return &userStore{
 		store: store,
 	}
