@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 type LoginUserReq struct {
 	Email    string `form:"email" binding:"required,email"`

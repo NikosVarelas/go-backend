@@ -1,9 +1,12 @@
-package controllers
+package handlers
 
 import (
 	"encoding/json"
 	"fmt"
+	"go-backed/app/repo"
+	"go-backed/app/types/errors"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
@@ -12,7 +15,7 @@ import (
 )
 
 // Webhook handles Stripe webhook events
-func Webhook() gin.HandlerFunc {
+func Webhook(ur repo.UserRepo) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Limit the body size to 64KB (Stripe recommends max of 65536 bytes)
 		const MaxBodyBytes = int64(65536)
@@ -36,6 +39,42 @@ func Webhook() gin.HandlerFunc {
 
 		// Handle the specific event types
 		switch event.Type {
+		case "checkout.session.completed":
+			var session stripe.CheckoutSession
+			if err := json.Unmarshal(event.Data.Raw, &session); err != nil {
+				fmt.Fprintf(os.Stderr, "Error parsing checkout session JSON: %v\n", err)
+			}
+
+			// Get the user ID from the session
+			log.Println("Checkout session completed")
+			log.Println(session)
+			customer := session.Customer
+			sessionEmail := customer.Email
+			if sessionEmail == "" {
+				fmt.Fprintf(os.Stderr, "No email found in session: %v\n", session)
+				c.JSON(http.StatusBadRequest, gin.H{"error": "No email found in session"})
+				return
+			}
+			user, err := ur.GetUserByEmail(sessionEmail)
+			if err != nil {
+				if err == errors.ErrUserNotFound {
+					_, err := ur.CreateUser(sessionEmail, "test", true)
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "Error creating new user: %v\n", err)
+						c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating new user"})
+						return
+					}
+				}
+				return
+			}
+
+			// Update the user's subscription status
+			user.IsPremium = true
+			err = ur.UpdateUser(user)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error updating user: %v\n", err)
+			}
+
 		case "payment_intent.succeeded":
 			var paymentIntent stripe.PaymentIntent
 			if err := json.Unmarshal(event.Data.Raw, &paymentIntent); err != nil {

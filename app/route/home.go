@@ -3,7 +3,7 @@ package route
 import (
 	"go-backed/app/cache"
 	"go-backed/app/configuration"
-	"go-backed/app/controllers"
+	"go-backed/app/handlers"
 	"go-backed/app/repo"
 	"go-backed/app/token"
 
@@ -16,8 +16,8 @@ func NewHomeRouter(r *gin.Engine, userRepo repo.UserRepo, tokenMaker *token.JWTM
 	// Protected routes
 	homeRoutes := r.Group("/")
 
-	homeRoutes.GET("/", controllers.Home())
+	homeRoutes.GET("/", handlers.Home())
 
 	// Webhook route
-	r.POST("/webhook", controllers.Webhook())
+	r.POST("/webhook", handlers.Webhook(userRepo))
 }

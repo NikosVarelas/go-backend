@@ -11,7 +11,7 @@ import (
 )
 
 func NewRouter(config *configuration.Config) *gin.Engine {
-	db, err := postgres.NewUserStore(config)
+	db, err := postgres.NewUserRepo(config)
 	if err != nil {
 		log.Fatal(err)
 	}
