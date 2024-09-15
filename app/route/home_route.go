@@ -4,13 +4,13 @@ import (
 	"go-backed/app/cache"
 	"go-backed/app/configuration"
 	"go-backed/app/controllers"
-	"go-backed/app/store"
+	"go-backed/app/repo"
 	"go-backed/app/token"
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewHomeRouter(r *gin.Engine, repo store.Store, tokenMaker *token.JWTMaker, cache cache.Cache, config *configuration.Config) {
+func NewHomeRouter(r *gin.Engine, repo repo.Store, tokenMaker *token.JWTMaker, cache cache.Cache, config *configuration.Config) {
 	// Public routes
 
 	// Protected routes

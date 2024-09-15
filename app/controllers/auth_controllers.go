@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"go-backed/app/store"
+	"go-backed/app/repo"
 	"go-backed/app/token"
 	"go-backed/templates"
 	"net/http"
@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func LoginUser(repo store.Store, tokenMaker *token.JWTMaker) gin.HandlerFunc {
+func LoginUser(repo repo.Store, tokenMaker *token.JWTMaker) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var u LoginUserReq
 		if err := c.ShouldBind(&u); err != nil {
@@ -77,7 +77,7 @@ func LoginIndex() gin.HandlerFunc {
 	}
 }
 
-func SignUpSubmit(repo store.Store) gin.HandlerFunc {
+func SignUpSubmit(repo repo.Store) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		email := c.Request.FormValue("email")
 		password := c.Request.FormValue("password")
