@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewHomeRouter(r *gin.Engine, repo repo.Repository, tokenMaker *token.JWTMaker, cache cache.Cache, config *configuration.Config) {
+func NewHomeRouter(r *gin.Engine, repo repo.UserRepo, tokenMaker *token.JWTMaker, cache cache.Cache, config *configuration.Config) {
 	// Public routes
 
 	// Protected routes

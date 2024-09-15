@@ -3,7 +3,7 @@ package route
 import (
 	"go-backed/app/cache"
 	"go-backed/app/configuration"
-	"go-backed/app/repo"
+	"go-backed/app/repo/postgres"
 	"go-backed/app/token"
 	"log"
 
@@ -11,7 +11,7 @@ import (
 )
 
 func NewRouter(config *configuration.Config) *gin.Engine {
-	db, err := repo.NewPGStore(config)
+	db, err := postgres.NewUserStore(config)
 	if err != nil {
 		log.Fatal(err)
 	}
