@@ -53,13 +53,13 @@ func (us *UserStore) GetUserByID(id int) (types.User, error) {
 	return user, nil
 }
 
-func (us *UserStore) CreateNewUser(email, password string) (*types.User, error) {
+func (us *UserStore) CreateNewUser(email, password string, isPremium bool) (*types.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 
-	user := types.NewUser(email, string(hashedPassword), false)
+	user := types.NewUser(email, string(hashedPassword), isPremium)
 
 	log.Println(user.Password)
 

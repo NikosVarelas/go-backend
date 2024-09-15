@@ -8,6 +8,6 @@ import (
 
 type UserRepo interface {
 	GetUserByID(id int) (types.User, error)
-	CreateNewUser(email, password string) (*types.User, error)
+	CreateNewUser(email, password string, isPremium bool) (*types.User, error)
 	GetUserByEmail(email string) (*types.User, error)
 }

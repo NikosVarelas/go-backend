@@ -92,7 +92,7 @@ func SignUpSubmit(repo repo.UserRepo) gin.HandlerFunc {
 			c.String(http.StatusBadRequest, "passwords do not match")
 		}
 
-		_, err := repo.CreateNewUser(email, password)
+		_, err := repo.CreateNewUser(email, password, false)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "Failed to create user")
 			return
