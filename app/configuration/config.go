@@ -46,6 +46,11 @@ func LoadConfig() (*Config, error) {
 		return nil, errors.New("JWT_SECRET_KEY environment variable is required")
 	}
 	config.JwtToken.SecretKey = jwtSecretKey
+	stripeKey := os.Getenv("STRIPE_KEY")
+	if stripeKey == "" {
+		return nil, errors.New("STRIPE_KEY environment variable is required")
+	}
+	config.Stripe.Key = stripeKey
 
 	return &config, nil
 }

@@ -24,7 +24,7 @@ func Home() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.WriteHeader(http.StatusOK)
 		c.Writer.Header().Set("Content-Type", "text/html")
-		err := templates.Home().Render(context.Background(), c.Writer)
+		err := templates.Layout(templates.Index(), "home", true).Render(context.Background(), c.Writer)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "Failed to render template")
 			return

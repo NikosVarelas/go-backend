@@ -1,5 +1,8 @@
 <footer class=\"bg-primary-600 p-4\"></footer>
-<nav class=\"bg-primary-600 p-4\"><div class=\"container flex justify-between\"><ol class=\"flex space-x-4\"><li><a class=\"text-gray-300\" href=\"/\">Home</a></li><li><a class=\"text-gray-200\" href=\"/about\">About</a></li></ol><ol class=\"flex space-x-4\"><li><a class=\"text-gray-200\" href=\"/register\">Register</a></li><li><a class=\"text-gray-200\" href=\"/login\">Login</a></li></ol></div></nav>
+<nav class=\"bg-primary-600 p-4\"><div class=\"container flex justify-between\"><ol class=\"flex space-x-4\"><li><a class=\"text-gray-300\" href=\"/\">Home</a></li><li><a class=\"text-gray-200\" href=\"/about\">About</a></li></ol><ol class=\"flex space-x-4\"><li><a class=\"text-gray-200\" href=\"/auth/sign-up\">Register</a></li>
+<li><a class=\"text-gray-200\" href=\"/auth/logout\">Logout</a></li>
+<li><a class=\"text-gray-200\" href=\"/auth/login\">Login</a></li>
+</ol></div></nav>
 <!doctype html><html lang=\"en\"><head><title>
 </title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><script src=\"/static/htmx.min.js\"></script><link rel=\"stylesheet\" href=\"/static/css/style.css\"></head><body class=\"flex flex-col h-full\">
 <div><h1>Hello</h1></div></body></html>

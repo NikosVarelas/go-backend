@@ -30,5 +30,6 @@ func NewRouter(config *configuration.Config) *gin.Engine {
 
 	router := gin.Default()
 	NewHomeRouter(router, db, tokenMaker, redis, config)
+	NewAuthRoute(router, db, tokenMaker, redis, config)
 	return router
 }

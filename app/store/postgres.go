@@ -62,8 +62,9 @@ func (pg *PGStore) CreateNewUser(email, password string) (User, error) {
 
 	log.Println(user.Password)
 
-	query := `INSERT INTO users(email, password) VALUES($1, $2) RETURNING id, email, password, created_at, updated_at`
-	err = pg.DB.QueryRow(query, email, hashedPassword).Scan(&user.ID, &user.Email, &user.Password, &user.CreatedAt, &user.UpdateAt)
+	query := `INSERT INTO users(email, hashed_password, is_premium, created_at, updated_at)  VALUES($1, $2, $3, $4, $5) RETURNING id, email, created_at, updated_at, is_premium`
+	err = pg.DB.QueryRow(query, &user.Email, &user.Password, &user.isPremium, &user.CreatedAt, &user.UpdatedAt).Scan(
+		&user.ID, &user.Email, &user.CreatedAt, &user.UpdatedAt, &user.isPremium)
 	if err != nil {
 		return User{}, err
 	}
@@ -74,7 +75,7 @@ func (pg *PGStore) CreateNewUser(email, password string) (User, error) {
 
 func (pg *PGStore) GetUserByEmail(email string) (User, error) {
 	var user User
-	query := `SELECT id, email, password FROM users WHERE email = $1`
+	query := `SELECT id, email, hashed_password FROM users WHERE email = $1`
 	err := pg.DB.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.Password)
 	if err != nil {
 		return User{}, err

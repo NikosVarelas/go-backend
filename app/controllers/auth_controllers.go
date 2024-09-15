@@ -67,8 +67,8 @@ func LoginIndex() gin.HandlerFunc {
 		c.Writer.WriteHeader(http.StatusOK)
 		c.Writer.Header().Set("Content-Type", "text/html")
 		// Render the templ component and write it to the response
-		t := templates.Index()
-		err := templates.Layout(t, "login").Render(c.Request.Context(), c.Writer)
+		t := templates.Login()
+		err := templates.Layout(t, "login", false).Render(c.Request.Context(), c.Writer)
 		if err != nil {
 			// Handle the error
 			c.String(http.StatusInternalServerError, err.Error())
@@ -100,6 +100,6 @@ func SignUpSubmit(repo store.Store) gin.HandlerFunc {
 		c.Writer.WriteHeader(http.StatusOK)
 		c.Writer.Header().Set("Content-Type", "text/html")
 
-		c.Redirect(http.StatusFound, "/protected/home")
+		c.Redirect(http.StatusFound, "/")
 	}
 }

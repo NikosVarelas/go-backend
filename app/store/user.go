@@ -8,7 +8,8 @@ type User struct {
 	Password  string
 	IsAdmin   bool
 	CreatedAt time.Time
-	UpdateAt  time.Time
+	UpdatedAt time.Time
+	isPremium bool
 }
 
 func NewUser(id int, email, password string) *User {
@@ -18,7 +19,8 @@ func NewUser(id int, email, password string) *User {
 		Password:  password,
 		IsAdmin:   false,
 		CreatedAt: time.Now(),
-		UpdateAt:  time.Now(),
+		UpdatedAt: time.Now(),
+		isPremium: false,
 	}
 }
 
@@ -29,7 +31,8 @@ func NewAdminUser(id int, email string, password string) *User {
 		Password:  password,
 		IsAdmin:   true,
 		CreatedAt: time.Now(),
-		UpdateAt:  time.Now(),
+		UpdatedAt: time.Now(),
+		isPremium: true,
 	}
 }
 

@@ -27,6 +27,9 @@ type Config struct {
 		SecretKey string `yaml:"SECRET_KEY"`
 		Period    int    `yaml:"PERIOD"` // in days
 	} `yaml:"JWT_TOKEN"`
+	Stripe struct {
+		Key string `yaml:"KEY"`
+	}
 }
 
 func NewConfig() (*Config, error) {
