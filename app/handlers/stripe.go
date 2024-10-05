@@ -3,10 +3,9 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"go-backed/app/repo"
+	"go-backed/app/services"
 	"go-backed/app/types/errors"
 	"io"
-	"log"
 	"net/http"
 	"os"
 
@@ -15,7 +14,7 @@ import (
 )
 
 // Webhook handles Stripe webhook events
-func Webhook(ur repo.UserRepo) gin.HandlerFunc {
+func Webhook(us *services.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Limit the body size to 64KB (Stripe recommends max of 65536 bytes)
 		const MaxBodyBytes = int64(65536)
@@ -46,19 +45,16 @@ func Webhook(ur repo.UserRepo) gin.HandlerFunc {
 			}
 
 			// Get the user ID from the session
-			log.Println("Checkout session completed")
-			log.Println(session)
-			customer := session.Customer
-			sessionEmail := customer.Email
+			sessionEmail := session.CustomerEmail
 			if sessionEmail == "" {
 				fmt.Fprintf(os.Stderr, "No email found in session: %v\n", session)
 				c.JSON(http.StatusBadRequest, gin.H{"error": "No email found in session"})
 				return
 			}
-			user, err := ur.GetUserByEmail(sessionEmail)
+			user, err := us.GetUserByEmail(sessionEmail)
 			if err != nil {
 				if err == errors.ErrUserNotFound {
-					_, err := ur.CreateUser(sessionEmail, "test", true)
+					_, err := us.CreateUser(sessionEmail, "", true)
 					if err != nil {
 						fmt.Fprintf(os.Stderr, "Error creating new user: %v\n", err)
 						c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating new user"})
@@ -70,7 +66,7 @@ func Webhook(ur repo.UserRepo) gin.HandlerFunc {
 
 			// Update the user's subscription status
 			user.IsPremium = true
-			err = ur.UpdateUser(user)
+			err = us.UpdateUser(user)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error updating user: %v\n", err)
 			}

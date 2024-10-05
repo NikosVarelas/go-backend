@@ -10,7 +10,6 @@ import (
 	"time"
 
 	_ "github.com/lib/pq" // PostgreSQL driver
-	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -54,18 +53,9 @@ func (ur *UserRepo) GetUserByID(id int) (types.User, error) {
 	return user, nil
 }
 
-func (ur *UserRepo) CreateUser(email, password string, isPremium bool) (*types.User, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, err
-	}
-
-	user := types.NewUser(email, string(hashedPassword), false)
-
-	log.Println(user.Password)
-
+func (ur *UserRepo) CreateUser(user *types.User) (*types.User, error) {
 	query := `INSERT INTO users(email, hashed_password, created_at, updated_at, is_premium)  VALUES($1, $2, $3, $4, $5) RETURNING id, email, created_at, updated_at, is_premium`
-	err = ur.DB.QueryRow(query, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt, &user.IsPremium).Scan(
+	err := ur.DB.QueryRow(query, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt, &user.IsPremium).Scan(
 		&user.ID, &user.Email, &user.CreatedAt, &user.UpdatedAt, &user.IsPremium)
 	if err != nil {
 		return nil, err

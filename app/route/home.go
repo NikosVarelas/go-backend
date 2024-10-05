@@ -1,16 +1,13 @@
 package route
 
 import (
-	"go-backed/app/cache"
-	"go-backed/app/configuration"
 	"go-backed/app/handlers"
-	"go-backed/app/repo"
-	"go-backed/app/token"
+	"go-backed/app/services"
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewHomeRouter(r *gin.Engine, userRepo repo.UserRepo, tokenMaker *token.JWTMaker, cache cache.Cache, config *configuration.Config) {
+func NewHomeRouter(r *gin.Engine, userService *services.UserService) {
 	// Public routes
 
 	// Protected routes
@@ -19,5 +16,5 @@ func NewHomeRouter(r *gin.Engine, userRepo repo.UserRepo, tokenMaker *token.JWTM
 	homeRoutes.GET("/", handlers.Home())
 
 	// Webhook route
-	r.POST("/webhook", handlers.Webhook(userRepo))
+	r.POST("/webhook", handlers.Webhook(userService))
 }

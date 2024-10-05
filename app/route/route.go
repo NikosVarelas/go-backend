@@ -4,6 +4,7 @@ import (
 	"go-backed/app/cache"
 	"go-backed/app/configuration"
 	"go-backed/app/repo/postgres"
+	"go-backed/app/services"
 	"go-backed/app/token"
 	"log"
 
@@ -28,8 +29,10 @@ func NewRouter(config *configuration.Config) *gin.Engine {
 
 	tokenMaker := token.NewJWTMaker(config)
 
+	userService := services.NewUserService(db)
+
 	router := gin.Default()
-	NewHomeRouter(router, db, tokenMaker, redis, config)
-	NewAuthRoute(router, db, tokenMaker, redis, config)
+	NewHomeRouter(router, userService)
+	NewAuthRoute(router, tokenMaker, redis, config, userService)
 	return router
 }

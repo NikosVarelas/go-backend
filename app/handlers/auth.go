@@ -1,17 +1,16 @@
 package handlers
 
 import (
-	"go-backed/app/repo"
+	"go-backed/app/services"
 	"go-backed/app/token"
 	"go-backed/templates"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
 
-func LoginUser(repo repo.UserRepo, tokenMaker *token.JWTMaker) gin.HandlerFunc {
+func LoginUser(us *services.UserService, tokenMaker *token.JWTMaker) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var u LoginUserReq
 		if err := c.ShouldBind(&u); err != nil {
@@ -21,18 +20,7 @@ func LoginUser(repo repo.UserRepo, tokenMaker *token.JWTMaker) gin.HandlerFunc {
 		email := u.Email
 		password := u.Password
 
-		user, err := repo.GetUserByEmail(email)
-		if err != nil {
-			c.String(http.StatusInternalServerError, "Failed to get user")
-			return
-		}
-
-		pwdMatch := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-		if pwdMatch != nil {
-			c.String(http.StatusUnauthorized, "Invalid credentials")
-			return
-		}
-
+		user, err := us.Login(email, password)
 		accessToken, _, err := tokenMaker.CreateToken(user.ID, user.Email, user.IsAdmin)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "Failed to create access token")
@@ -77,7 +65,7 @@ func LoginIndex() gin.HandlerFunc {
 	}
 }
 
-func SignUpSubmit(repo repo.UserRepo) gin.HandlerFunc {
+func SignUpSubmit(us *services.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		email := c.Request.FormValue("email")
 		password := c.Request.FormValue("password")
@@ -92,7 +80,7 @@ func SignUpSubmit(repo repo.UserRepo) gin.HandlerFunc {
 			c.String(http.StatusBadRequest, "passwords do not match")
 		}
 
-		_, err := repo.CreateUser(email, password, false)
+		_, err := us.CreateUser(email, password, false)
 		if err != nil {
 			c.String(http.StatusInternalServerError, "Failed to create user")
 			return
